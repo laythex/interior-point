@@ -10,6 +10,4 @@ std::pair<std::vector<bool>, std::vector<double>> find_interior(const Matrix& A,
 
 bool simplex_routine(Matrix& T);
 
-void canonize(Matrix& T);
-
 std::vector<size_t> find_basics(const Matrix& T);
