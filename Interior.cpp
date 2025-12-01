@@ -49,7 +49,7 @@ std::pair<std::vector<bool>, std::vector<double>> find_interior(const Matrix& A,
     simplex_routine(T);
 
     // Если все плохо
-    if (std::abs(T(0, T_cols - 1)) > feas_eps) return {{false}, {}};
+    if (std::abs(T(0, T_cols - 1)) > local_eps) return {{false}, {}};
 
     // Обнуляем искусственные переменные и больше их не трогаем
     for (size_t i = 0; i < T_rows; i++) {
@@ -158,10 +158,10 @@ std::vector<size_t> find_basics(const Matrix& T) {
         bool unit = true;
 
         for (size_t i = 1; i < T_rows; ++i) {
-            if (std::abs(T(i, j)) > feas_eps) {
+            if (std::abs(T(i, j)) > local_eps) {
                 count_nonzero++;
                 pivot_row = i;
-                if (std::abs(T(i, j) - 1.0) > feas_eps) unit = false;
+                if (std::abs(T(i, j) - 1.0) > local_eps) unit = false;
             }
         }
 
