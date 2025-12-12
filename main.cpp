@@ -20,38 +20,22 @@
 //===================================================//
 
 size_t n = 2;
-Matrix Q = Matrix({{0.5, 0}, {0, 0.25}});
-std::vector<double> c = {-3, -2};
+Matrix Q = Matrix({{-1, 0}, {0, -1}});
+std::vector<double> c = {0, 0};
 
-// Пример: ограниченная прямоугольная область
-size_t m = 4;
-Matrix A = Matrix({{1, 0}, {0, 1}, {-1, 0}, {0, -1}});
-std::vector<double> b = {2, 3, 0, 0};
-
-// Пример: неограниченная область, функционал ограничен снизу
-// size_t m = 2;
-// Matrix A = Matrix({{-3, -1}, {1, 2}});
-// std::vector<double> b = {-5, 0};
-
-// size_t n = 2;
-// Matrix Q = Matrix({{-0.5, 0}, {0, -0.25}});
-// std::vector<double> c = {2, 2};
-
-// Пример: неограниченная область, функционал не ограничен снизу
-// size_t m = 2;
-// Matrix A = Matrix({{-3, -1}, {1, 2}});
-// std::vector<double> b = {-5, 0};
+size_t m = 3;
+Matrix A = Matrix({{-1, -2}, {-1, 0}, {0, -1}});
+std::vector<double> b = {-4, 0, 0};
 
 double mu_0 = 0.1;
 double mu_next(double mu_k, unsigned k) {
-    // return mu_k / (k + 1);
     return mu_k * 0.999;
 }
 
 double eps = 0.0001;
 
 bool is_x0_provided = false;
-std::vector<double> x0 = {1, 2};
+std::vector<double> x0 = {0, 0};
 
 //===================================================//
 
@@ -83,7 +67,6 @@ std::vector<double> gradient(const std::vector<double>& x, double mu) {
     std::vector<double> g = A * x - b;
     for (size_t j = 0; j < m; j++) {
         grad_barrier = grad_barrier - A(j) / g[j];
-        std::cout << j << std::endl;
     }
     grad_barrier = grad_barrier * mu;
 
@@ -115,7 +98,6 @@ bool is_in_region(std::vector<double>& x) {
 }
 
 int main() {
-
     std::pair<std::vector<bool>, std::vector<double>> point = find_interior(A, b);
 
     if (is_x0_provided) {
@@ -136,7 +118,8 @@ int main() {
     }
     std::cout << std::endl;
 
-    if (point.first[1]) {
+    bool is_unbounded = point.first[1];
+    if (is_unbounded) {
         std::cout << "Исследуемая область неограничена" << std::endl;
         std::cout << "Удостоверьтесь, что функция ограничена снизу внутри области" << std::endl;
         std::cout << "Продолжить? (y/n) ";
@@ -149,6 +132,10 @@ int main() {
     unsigned k = 0;
     double mu = mu_0;
     double F_cur = F(x, mu_0);
+
+    double f_delta = 0;
+    double f_last = 0;
+    unsigned f_n = 0;
 
     while (true) {
         k++;
@@ -184,6 +171,20 @@ int main() {
 
         if (delta < eps) break;
         F_cur = F_next;
+
+        if (std::abs(f(x)) - f_last > f_delta && is_unbounded) { // без is_unbounded тоже работает, но можно его оставить для верности
+            f_n++;
+        } else {
+            f_n = 0;
+        }
+
+        if (f_n >= 10) {
+            std::cout << "Скорее всего, целевая функция не ограничена снизу в допустимой области" << std::endl;
+            return 0;
+        }
+
+        f_delta = std::abs(f(x)) - f_last;
+        f_last = std::abs(f(x));
     }
 
     std::cout << "x0 = " << x0 << std::endl;
