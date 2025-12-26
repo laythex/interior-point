@@ -19,17 +19,17 @@
 
 //===================================================//
 
-size_t n = 2;
-Matrix Q = Matrix({{-1, 0}, {0, -1}});
-std::vector<double> c = {0, 0};
+size_t n = 3;
+Matrix Q = Matrix({{1, -2, 1}, {-2, 5, -4}, {1, -4, 6}});
+std::vector<double> c = {-3, 9, 11};
 
-size_t m = 3;
-Matrix A = Matrix({{-1, -2}, {-1, 0}, {0, -1}});
-std::vector<double> b = {-4, 0, 0};
+size_t m = 6;
+Matrix A = Matrix({{-1, -5, -1}, {1, 1, 1}, {-1, 0, 1}, {-1, 0, 0}, {0, -1, 0}, {0, 0, -1}});
+std::vector<double> b = {-6, 7, 0, 0, 0, 0};
 
 double mu_0 = 0.1;
 double mu_next(double mu_k, unsigned k) {
-    return mu_k * 0.999;
+    return mu_k * 0.9;
 }
 
 double eps = 0.0001;
